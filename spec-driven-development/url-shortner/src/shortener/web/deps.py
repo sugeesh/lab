@@ -2,6 +2,7 @@ import sqlite3
 from collections.abc import Iterator
 from datetime import UTC, datetime
 from typing import Annotated
+from zoneinfo import ZoneInfo
 
 from fastapi import Depends, Request
 from fastapi.templating import Jinja2Templates
@@ -19,6 +20,14 @@ class SignInRequired(Exception):
 
 def now() -> datetime:
     return datetime.now(UTC)
+
+
+def in_zone(moment: datetime, time_zone: str) -> tuple[datetime, str]:
+    """The moment in the given zone, or in UTC when that zone would pass the year 9999."""
+    try:
+        return moment.astimezone(ZoneInfo(time_zone)), time_zone
+    except OverflowError:
+        return moment.astimezone(UTC), "UTC"
 
 
 def settings(request: Request) -> Settings:

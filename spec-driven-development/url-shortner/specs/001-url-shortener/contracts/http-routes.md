@@ -37,15 +37,22 @@ Invalid or missing `time_zone` is stored as `UTC`.
 | Method | Path | Form fields | Result |
 |--------|------|-------------|--------|
 | GET | `/` | — | Signed out: 303 → `/account/signin`. Signed in: 200 page with the shorten form and the user's link list, newest first (FR-014) |
-| POST | `/links` | `url`, `expires_at` (optional, browser-local `YYYY-MM-DDTHH:MM`), `time_zone` | **303** → `/links/{code}` showing the new short link and copy button (FR-007); **400** form re-shown with message (invalid URL, too long, points to this service, expiry in the past); **429** "You've created 100 links in the last hour. You can create more at HH:MM." (FR-007a) |
+| POST | `/links` | `url`, `expires_at` (optional, `YYYY-MM-DDTHH:MM` in the owner's saved time zone) | **303** → `/links/{code}` showing the new short link and copy button (FR-007); **400** form re-shown with message (invalid URL, too long, points to this service, expiry in the past or in year 9999 or later); **429** "You've created 100 links in the last hour. You can create more at HH:MM." (FR-007a); **503** "We couldn't create a short link just now. Please try again." when no unused code is found after 5 tries |
 | GET | `/links/{code}` | — | 200 link detail: short link + copy button, target, status, expiry form, enable/disable, delete, total clicks, 30-day table with stated time zone (FR-019) |
 | POST | `/links/{code}/disable` | — | **303** → `/links/{code}` (FR-015) |
 | POST | `/links/{code}/enable` | — | **303** → `/links/{code}` (FR-015) |
-| POST | `/links/{code}/expiry` | `expires_at` (empty = remove), `time_zone` | **303** → `/links/{code}`; **400** if in the past (FR-016) |
+| POST | `/links/{code}/expiry` | `expires_at` (empty = remove) | **303** → `/links/{code}`; **400** if in the past or in year 9999 or later (FR-016) |
 | GET | `/links/{code}/delete` | — | 200 confirmation page (FR-017) |
 | POST | `/links/{code}/delete` | — | **303** → `/`; link and its clicks removed, code never reissued (FR-006, FR-017) |
 
-`expires_at` is interpreted in the submitted browser `time_zone` and stored as UTC.
+`expires_at` is interpreted in the owner's saved time zone (the zone every date on the page is
+shown in, and named next to the field) and stored as UTC.
+
+## Error pages
+
+Every error is a plain HTML page, never JSON (Constitution III): any unmatched path → **404**
+"Link not found"; a wrong method → **405** "This page can't be used that way."; an unexpected
+failure → **500** "a problem on our side" page, with the exception logged at `ERROR`.
 
 ## Static
 

@@ -271,10 +271,10 @@ change redirect behaviour as specified.
 
 ### Tests for User Story 2 (write first, must FAIL) ⚠️
 
-- [ ] T029 [P] [US2] Write `tests/unit/test_link_status.py` for `links.status(enabled,
+- [X] T029 [P] [US2] Write `tests/unit/test_link_status.py` for `links.status(enabled,
   expires_at, now)`: `enabled=0` → `"disabled"` (even when expired); `expires_at ≤ now` →
   `"expired"`; otherwise `"active"`; `expires_at=None` and enabled → `"active"`.
-- [ ] T030 [P] [US2] Write `tests/integration/test_us2_manage.py` covering spec US2
+- [X] T030 [P] [US2] Write `tests/integration/test_us2_manage.py` covering spec US2
   scenarios:
   1. Three links created → `GET /` lists exactly those three, newest first, each row showing
      original address, short link, status, expiry ("No expiry" when none), created date,
@@ -292,17 +292,17 @@ change redirect behaviour as specified.
 
 ### Implementation for User Story 2
 
-- [ ] T031 [US2] Add to `src/shortener/links.py`: `status(enabled, expires_at, now)`,
+- [X] T031 [US2] Add to `src/shortener/links.py`: `status(enabled, expires_at, now)`,
   `list_links(conn, user_id)` (newest first, using the `(user_id, created_at DESC)` index;
   total clicks via `LEFT JOIN` + `SUM(daily_clicks.count)` defaulting to 0), `set_enabled(conn,
   user_id, code, enabled)`, `delete_link(conn, user_id, code)` (deletes the `links` row;
   `daily_clicks` go by cascade; `issued_codes` untouched). Each mutator returns `False` when
   the link is not owned (makes T029 pass).
-- [ ] T032 [US2] Extend `src/shortener/web/redirect.py`: when `status` is `"disabled"`
+- [X] T032 [US2] Extend `src/shortener/web/redirect.py`: when `status` is `"disabled"`
   render `templates/visitor_disabled.html` with 403. Create
   `src/shortener/templates/visitor_disabled.html` ("This link is disabled" + "The owner has
   turned this link off.").
-- [ ] T033 [US2] Extend `src/shortener/web/links.py` and templates: link table on
+- [X] T033 [US2] Extend `src/shortener/web/links.py` and templates: link table on
   `home.html` (semantic `<table>`, collapses to stacked rows under 480 px), status shown as
   text; on `link.html` add a Disable/Enable form button and a "Delete link" link; add
   `GET /links/{code}/delete` with `src/shortener/templates/delete.html` (states the code will
@@ -323,11 +323,11 @@ future expiry still redirects; removing expiry restores redirects.
 
 ### Tests for User Story 3 (write first, must FAIL) ⚠️
 
-- [ ] T034 [P] [US3] Write `tests/unit/test_expiry.py` for `links.parse_local_expiry(value,
+- [X] T034 [P] [US3] Write `tests/unit/test_expiry.py` for `links.parse_local_expiry(value,
   time_zone, now)`: `""` → `None`; `"2026-12-01T09:30"` in `Asia/Colombo` →
   `2026-12-01T04:00:00Z`; a value ≤ `now` raises `ExpiryError("Choose a time in the
   future.")`; malformed text raises `ExpiryError` with a plain message.
-- [ ] T035 [P] [US3] Write `tests/integration/test_us3_expiry.py` covering spec US3
+- [X] T035 [P] [US3] Write `tests/integration/test_us3_expiry.py` covering spec US3
   scenarios:
   1. Create with a future `expires_at` → visitor gets 302.
   2. A link whose stored `expires_at` is in the past → visitor gets 410 page containing
@@ -342,14 +342,14 @@ future expiry still redirects; removing expiry restores redirects.
 
 ### Implementation for User Story 3
 
-- [ ] T036 [US3] Add to `src/shortener/links.py`: `ExpiryError`, `parse_local_expiry(value,
+- [X] T036 [US3] Add to `src/shortener/links.py`: `ExpiryError`, `parse_local_expiry(value,
   time_zone, now)` (parse `YYYY-MM-DDTHH:MM`, attach `ZoneInfo(time_zone)`, convert to UTC,
   must be > now), `set_expiry(conn, user_id, code, expires_at)`; make `create_link` accept and
   store `expires_at` (makes T034 pass).
-- [ ] T037 [US3] Extend `src/shortener/web/redirect.py`: when `status` is `"expired"` render
+- [X] T037 [US3] Extend `src/shortener/web/redirect.py`: when `status` is `"expired"` render
   `src/shortener/templates/visitor_expired.html` ("This link has expired" + "The owner set it
   to stop working on <date>.") with 410. Disabled check stays first.
-- [ ] T038 [US3] Extend `src/shortener/web/links.py` and templates: optional "Expires"
+- [X] T038 [US3] Extend `src/shortener/web/links.py` and templates: optional "Expires"
   `datetime-local` field on `home.html` with a hint "Leave empty to keep the link working";
   expiry form on `link.html` (set/change/remove) posting to `POST /links/{code}/expiry`;
   show expiry dates in the user's time zone with the zone name (makes T035 pass).
@@ -368,7 +368,7 @@ show 0.
 
 ### Tests for User Story 4 (write first, must FAIL) ⚠️
 
-- [ ] T039 [P] [US4] Write `tests/unit/test_clicks.py`:
+- [X] T039 [P] [US4] Write `tests/unit/test_clicks.py`:
   - `record_click(conn, code, owner_time_zone, now)` creates `(code, day, 1)` then increments
     to 2 on the same day; `day` is the date in the owner's zone (e.g. `now =
     2026-11-17T20:00:00Z`, zone `Asia/Colombo` → day `2026-11-18`).
@@ -376,7 +376,7 @@ show 0.
   - `last_30_days(conn, code, owner_time_zone, now)` returns exactly 30 `(date, count)` pairs
     from today−29 to today in the owner's zone, oldest first, zeros filled, including days
     before the link existed.
-- [ ] T040 [P] [US4] Write `tests/integration/test_us4_stats.py` covering spec US4
+- [X] T040 [P] [US4] Write `tests/integration/test_us4_stats.py` covering spec US4
   scenarios:
   1. 5 visitor redirects today and 3 rows for yesterday inserted directly → detail page shows
      total 8, today 5, yesterday 3, the other 28 days 0, and names the time zone ("Days shown
@@ -390,14 +390,14 @@ show 0.
 
 ### Implementation for User Story 4
 
-- [ ] T041 [US4] Implement `src/shortener/clicks.py`: `record_click` (single upsert from
+- [X] T041 [US4] Implement `src/shortener/clicks.py`: `record_click` (single upsert from
   data-model.md), `total_clicks`, `last_30_days` (one range query `day BETWEEN start AND
   today`, then fill missing dates) (makes T039 pass).
-- [ ] T042 [US4] Extend `src/shortener/web/redirect.py`: on the 302 path only, add a
+- [X] T042 [US4] Extend `src/shortener/web/redirect.py`: on the 302 path only, add a
   `BackgroundTasks` task `_record_click_safely(db_path, code, time_zone, now)` that opens
   its own connection, calls `record_click`, and on any exception logs
   `logger.exception("click not recorded for code %s", code)` without re-raising.
-- [ ] T043 [US4] Extend `src/shortener/web/links.py` and `src/shortener/templates/link.html`:
+- [X] T043 [US4] Extend `src/shortener/web/links.py` and `src/shortener/templates/link.html`:
   show "Total clicks" and a 30-row table (date, count, a CSS bar whose width is count ÷ the
   30-day max, with the number always visible as text), caption "Clicks per day, last 30 days.
   Days shown in <zone>." (makes T040 pass).
@@ -408,24 +408,24 @@ show 0.
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T044 [P] Write `tests/perf/test_redirect_latency.py` (marker `perf`): seed 1,000,000
+- [X] T044 [P] Write `tests/perf/test_redirect_latency.py` (marker `perf`): seed 1,000,000
   links into a temp DB with `executemany` in one transaction (one user; codes from
   `generate_code` collected into a `set` until it holds exactly 1,000,000 distinct codes, so
   a random duplicate can never break the insert; matching `issued_codes` rows); start `uvicorn` for `create_app` on a
   free port in a subprocess; with `httpx` send 50 requests/second for 30 seconds to random
   existing codes (`follow_redirects=False`); parse `Server-Timing` durations; assert p95 <
   50 ms and every response is 302 (SC-001).
-- [ ] T045 Run `pytest -m perf`; if p95 ≥ 50 ms, profile and fix within the redirect path
+- [X] T045 Run `pytest -m perf`; if p95 ≥ 50 ms, profile and fix within the redirect path
   only, then re-run.
-- [ ] T046 [P] Review all templates in `src/shortener/templates/` against Constitution V:
+- [X] T046 [P] Review all templates in `src/shortener/templates/` against Constitution V:
   remove any decorative element, emoji, gradient, or filler copy; confirm every error message
   says what went wrong and how to fix it (Constitution III).
-- [ ] T047 [P] Accessibility check of `src/shortener/templates/` and
+- [X] T047 [P] Accessibility check of `src/shortener/templates/` and
   `src/shortener/static/style.css`: every input has a `<label>`; focus order follows reading
   order; `:focus-visible` visible; text contrast ≥ 4.5:1; no horizontal scroll at 320 px.
-- [ ] T048 Run `ruff format . && ruff check .` with zero warnings and remove any dead or
+- [X] T048 Run `ruff format . && ruff check .` with zero warnings and remove any dead or
   commented-out code (Constitution II).
-- [ ] T049 Execute every step in `specs/001-url-shortener/quickstart.md` "Manual
+- [X] T049 Execute every step in `specs/001-url-shortener/quickstart.md` "Manual
   validation" and record pass/fail in the PR description.
 
 ---
@@ -506,3 +506,23 @@ Task: "Implement src/shortener/urls.py"         # T024
 - [P] = different files, no dependency on unfinished tasks.
 - Never mark a test task done until it has been seen failing for the right reason.
 - Do not add features, options, or abstractions not listed here (Constitution IV).
+
+---
+
+## Phase 8: Convergence
+
+- [X] T050 CRITICAL: Write a failing test in `tests/integration/test_error_pages.py` asserting `GET /links/abc/xyz` and `GET /account/nope` return 404 HTML containing "Link not found" (not JSON) and `PUT /` returns 405 HTML with a plain sentence such as "This page can't be used that way."; then add `StarletteHTTPException` handling in `src/shortener/main.py` that renders `templates/visitor_not_found.html` for 404 and a new `src/shortener/templates/error.html` for other statuses per Constitution III / FR-021 (contradicts)
+- [X] T051 CRITICAL: Write failing tests that (a) force `codes.issue_code` to raise `CodeExhaustedError` and assert `POST /links` re-renders the form with HTTP 503 and "We couldn't create a short link just now. Please try again." with nothing stored, and (b) assert an unexpected exception in a route returns a 500 HTML page with a plain message and is logged at ERROR; then catch `CodeExhaustedError` in `src/shortener/web/links.py` and add a 500 handler rendering `src/shortener/templates/error.html` in `src/shortener/main.py` per Constitution III (contradicts)
+- [X] T052 Record the actual structure in `specs/001-url-shortener/plan.md`: add `web/deps.py` (connection, current-user and render helpers, separate from `main.py` to avoid a circular import) to the Project Structure tree, and state that the app starts with `uvicorn shortener.main:create_app --factory` (no module-level `app`) per plan: Project Structure / T014 (contradicts)
+
+---
+
+## Phase 9: Convergence
+
+- [X] T053 CRITICAL: Add a failing case to `tests/unit/test_expiry.py` asserting `parse_local_expiry("9999-12-31T23:59", "Pacific/Pago_Pago", now)` raises `ExpiryError("Choose a date before the year 9999.")` (it currently raises `OverflowError`, which shows the generic 500 page), plus an integration case in `tests/integration/test_us3_expiry.py` asserting `POST /links/{code}/expiry` with that value returns 400 with the message; then catch `OverflowError` in `parse_local_expiry` in `src/shortener/links.py` per Constitution III / FR-016 (contradicts)
+
+---
+
+## Phase 10: Convergence
+
+- [X] T054 CRITICAL: Add failing tests — unit: `parse_local_expiry("9999-06-01T00:00", "UTC", now)` raises `ExpiryError("Choose a date before the year 9999.")`; integration in `tests/integration/test_us3_expiry.py`: a UTC owner's link with `expires_at = '9999-12-31T23:59:00Z'` stored directly, owner then signs in with `time_zone=Pacific/Kiritimati`, and `GET /` and `GET /links/{code}` must return 200 (they currently return 500 because converting to UTC+14 passes year 9999) — then make `parse_local_expiry` in `src/shortener/links.py` reject any local year ≥ 9999 (matching the existing message), and clamp display of stored expiries in `src/shortener/web/links.py` and `src/shortener/web/redirect.py` so a conversion overflow falls back to showing the UTC value with "UTC" named, per Constitution III / FR-014 / FR-016 (contradicts)

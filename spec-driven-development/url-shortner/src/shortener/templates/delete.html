@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Delete link{% endblock %}
+{% block content %}
+<h1>Delete this link?</h1>
+<p><strong>{{ link.short_link }}</strong> will stop working straight away. Its click history
+is removed, and its code will never be used again.</p>
+<div class="actions">
+  <form method="post" action="/links/{{ link.code }}/delete">
+    <button type="submit" class="button-danger">Delete</button>
+  </form>
+  <a class="button-quiet" href="/links/{{ link.code }}">Cancel</a>
+</div>
+{% endblock %}

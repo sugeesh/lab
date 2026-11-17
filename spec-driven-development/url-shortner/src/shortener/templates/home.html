@@ -1,13 +1,49 @@
 {% extends "base.html" %}
-{% block title %}Shorten a link{% endblock %}
+{% block title %}Your links{% endblock %}
 {% block content %}
 <h1>Shorten a link</h1>
 {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
 <form method="post" action="/links" class="form">
   <label for="url">Long web address</label>
   <input id="url" name="url" type="url" required autofocus
-         value="{{ url or '' }}" aria-describedby="url-hint">
+         value="{{ form.url or '' }}" aria-describedby="url-hint">
   <p id="url-hint" class="hint">Starts with http:// or https://</p>
+  <label for="expires_at">Expires <span class="label-note">(optional, {{ user.time_zone }} time)</span></label>
+  <input id="expires_at" name="expires_at" type="datetime-local"
+         value="{{ form.expires_at or '' }}" aria-describedby="expires-hint">
+  <p id="expires-hint" class="hint">Leave empty to keep the link working.</p>
   <button type="submit">Shorten</button>
 </form>
+
+<h2>Your links</h2>
+{% if links %}
+<table class="link-table">
+  <thead>
+    <tr>
+      <th scope="col">Short link</th>
+      <th scope="col">Goes to</th>
+      <th scope="col">Status</th>
+      <th scope="col">Expires ({{ user.time_zone }})</th>
+      <th scope="col">Created</th>
+      <th scope="col" class="number">Clicks</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for link in links %}
+    <tr>
+      <td data-label="Short link"><a href="/links/{{ link.code }}">{{ link.short_link }}</a></td>
+      <td data-label="Goes to">{{ link.target_url }}</td>
+      <td data-label="Status">{{ link.status }}</td>
+      <td data-label="Expires">
+        {% if link.expires_at %}{{ link.expires_at.strftime("%d %b %Y, %H:%M") }}{% if link.expires_zone != user.time_zone %} ({{ link.expires_zone }}){% endif %}{% else %}No expiry{% endif %}
+      </td>
+      <td data-label="Created">{{ link.created_at.strftime("%d %b %Y") }}</td>
+      <td data-label="Clicks" class="number">{{ link.total_clicks }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No links yet. Links you shorten will be listed here.</p>
+{% endif %}
 {% endblock %}

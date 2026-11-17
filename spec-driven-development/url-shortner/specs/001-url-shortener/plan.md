@@ -76,7 +76,7 @@ specs/001-url-shortener/
 ```text
 pyproject.toml
 src/shortener/
-├── main.py            # app factory, middleware (Server-Timing), route registration
+├── main.py            # create_app() factory, Server-Timing middleware, error pages, routes
 ├── config.py          # settings from env: DB path, base URL
 ├── db.py              # connection with pragmas, schema bootstrap
 ├── schema.sql         # CREATE TABLE IF NOT EXISTS ... (data-model.md)
@@ -86,6 +86,8 @@ src/shortener/
 ├── links.py           # create, list, enable/disable, expiry, delete, status, rate limit
 ├── clicks.py          # record click (upsert), totals, 30-day series
 ├── web/
+│   ├── deps.py        # per-request connection, current user, render(); kept out of main.py
+│   │                  # so route modules can import it without a circular import
 │   ├── redirect.py    # GET /{code}
 │   ├── account.py     # /account/*
 │   └── links.py       # /, /links/*
@@ -102,6 +104,9 @@ tests/
 └── perf/
     └── test_redirect_latency.py   # 1M links, 50 req/s, p95 < 50 ms (marker: perf)
 ```
+
+**Run command**: `uvicorn shortener.main:create_app --factory`. There is no module-level `app`,
+so importing `shortener.main` (as the tests do) never creates a database file.
 
 **Structure Decision**: Single project. The service renders its own pages, so there is no
 separate frontend. Business logic lives in plain functions under `src/shortener/` taking a

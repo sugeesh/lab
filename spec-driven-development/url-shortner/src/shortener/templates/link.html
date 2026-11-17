@@ -4,7 +4,7 @@
 <h1>Your short link</h1>
 <label for="short-link">Short link</label>
 <div class="copy-row">
-  <input id="short-link" type="text" readonly value="{{ short_link }}">
+  <input id="short-link" type="text" readonly value="{{ link.short_link }}">
   <button type="button" data-copy-target="short-link">Copy</button>
 </div>
 <p class="notice" id="copy-status" aria-live="polite"></p>
@@ -12,9 +12,63 @@
 <dl class="details">
   <dt>Goes to</dt>
   <dd>{{ link.target_url }}</dd>
+  <dt>Status</dt>
+  <dd>{{ link.status }}</dd>
+  <dt>Expires</dt>
+  <dd>{% if link.expires_at %}{{ link.expires_at.strftime("%d %b %Y, %H:%M") }} ({{ link.expires_zone }}){% else %}No expiry{% endif %}</dd>
   <dt>Created</dt>
-  <dd>{{ created_at.strftime("%d %b %Y, %H:%M") }}</dd>
+  <dd>{{ link.created_at.strftime("%d %b %Y, %H:%M") }}</dd>
 </dl>
 
-<p><a href="/">Shorten another link</a></p>
+<h2>Clicks</h2>
+<dl class="details">
+  <dt>Total clicks</dt>
+  <dd>{{ total_clicks }}</dd>
+</dl>
+<table class="clicks-table">
+  <caption>Clicks per day, last 30 days. Days shown in {{ user.time_zone }}.</caption>
+  <thead>
+    <tr>
+      <th scope="col">Day</th>
+      <th scope="col" class="number">Clicks</th>
+      <th scope="col"><span class="visually-hidden">Compared with the busiest day</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in days|reverse %}
+    <tr data-day="{{ row.day.isoformat() }}">
+      <td>{{ row.day.strftime("%a %d %b") }}</td>
+      <td class="number">{{ row.count }}</td>
+      <td class="bar-cell" aria-hidden="true"><span class="bar" style="width: {{ (row.share * 100)|round(1) }}%"></span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Expiry</h2>
+{% if expiry_error %}<p class="error" role="alert">{{ expiry_error }}</p>{% endif %}
+<form method="post" action="/links/{{ link.code }}/expiry" class="form">
+  <label for="expires_at">Expires <span class="label-note">({{ user.time_zone }} time)</span></label>
+  <input id="expires_at" name="expires_at" type="datetime-local"
+         value="{{ link.expires_at_input }}" aria-describedby="expiry-hint">
+  <p id="expiry-hint" class="hint">Clear the field and save to remove the expiry.</p>
+  <button type="submit" class="button-quiet">Save expiry</button>
+</form>
+
+<h2>Manage</h2>
+<div class="actions">
+  {% if link.enabled %}
+  <form method="post" action="/links/{{ link.code }}/disable">
+    <button type="submit" class="button-quiet">Disable link</button>
+  </form>
+  <p class="hint">Visitors will see a page saying the link is disabled. You can enable it again.</p>
+  {% else %}
+  <form method="post" action="/links/{{ link.code }}/enable">
+    <button type="submit" class="button-quiet">Enable link</button>
+  </form>
+  {% endif %}
+  <p><a href="/links/{{ link.code }}/delete">Delete link</a></p>
+</div>
+
+<p><a href="/">Back to your links</a></p>
 {% endblock %}
