@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Short link{% endblock %}
+{% block content %}
+<h1>Your short link</h1>
+<label for="short-link">Short link</label>
+<div class="copy-row">
+  <input id="short-link" type="text" readonly value="{{ short_link }}">
+  <button type="button" data-copy-target="short-link">Copy</button>
+</div>
+<p class="notice" id="copy-status" aria-live="polite"></p>
+
+<dl class="details">
+  <dt>Goes to</dt>
+  <dd>{{ link.target_url }}</dd>
+  <dt>Created</dt>
+  <dd>{{ created_at.strftime("%d %b %Y, %H:%M") }}</dd>
+</dl>
+
+<p><a href="/">Shorten another link</a></p>
+{% endblock %}

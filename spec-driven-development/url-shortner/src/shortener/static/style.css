@@ -1,0 +1,224 @@
+/* Design tokens. Every colour pair used for text meets WCAG AA (>= 4.5:1). */
+:root {
+  --color-bg: #fbfaf7;
+  --color-surface: #ffffff;
+  --color-text: #1d1d1b;
+  --color-muted: #5c5b57;
+  --color-border: #d9d6cf;
+  --color-accent: #1f5f8b;
+  --color-accent-strong: #174a6d;
+  --color-on-accent: #ffffff;
+  --color-error: #a12c1f;
+  --color-success: #2d6a3e;
+  --color-focus: #c26a00;
+
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 28px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+
+  --radius: 4px;
+  --content-width: 720px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: 1.5;
+}
+
+main,
+.site-header {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0 var(--space-3);
+}
+
+main {
+  padding-bottom: var(--space-5);
+}
+
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-4);
+}
+
+.brand {
+  font-weight: 600;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+
+.account form {
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--text-xl);
+  line-height: 1.2;
+  margin: 0 0 var(--space-3);
+}
+
+h2 {
+  font-size: var(--text-lg);
+  margin: var(--space-5) 0 var(--space-2);
+}
+
+a {
+  color: var(--color-accent);
+}
+
+a:hover {
+  color: var(--color-accent-strong);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Forms */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 480px;
+}
+
+label {
+  font-weight: 600;
+  margin-top: var(--space-2);
+}
+
+input[type="text"],
+input[type="url"],
+input[type="email"],
+input[type="password"],
+input[type="datetime-local"] {
+  width: 100%;
+  padding: var(--space-2);
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-muted);
+  border-radius: var(--radius);
+}
+
+input[readonly] {
+  font-family: var(--font-mono);
+  background: var(--color-bg);
+}
+
+button {
+  align-self: flex-start;
+  padding: var(--space-2) var(--space-3);
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--color-accent-strong);
+}
+
+.button-quiet {
+  padding: var(--space-1) var(--space-2);
+  font-weight: 400;
+  color: var(--color-accent);
+  background: transparent;
+  border-color: var(--color-border);
+}
+
+.button-quiet:hover {
+  color: var(--color-accent-strong);
+  background: var(--color-surface);
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+
+.error {
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-error);
+  border-left: 4px solid var(--color-error);
+  background: var(--color-surface);
+}
+
+.notice {
+  color: var(--color-success);
+  font-size: var(--text-sm);
+  min-height: 1.5em;
+  margin: 0;
+}
+
+/* Short link with its copy button */
+.copy-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.copy-row input {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.copy-row button {
+  align-self: auto;
+}
+
+dl.details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-1) var(--space-3);
+  margin: var(--space-4) 0 0;
+}
+
+dl.details dt {
+  color: var(--color-muted);
+}
+
+dl.details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
