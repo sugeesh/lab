@@ -1,0 +1,23 @@
+class NumArray:
+
+    def __init__(self, nums: list[int]):
+        self.list = nums
+        self.sumList = [0] * len(nums)
+        self.calculateSumList(0, len(nums))
+
+    def update(self, index: int, val: int) -> None:
+        self.list[index] = val
+        self.calculateSumList(index, len(self.list))
+
+    def sumRange(self, left: int, right: int) -> int:
+        if (left != 0):
+            return self.sumList[right] - self.sumList[left-1]
+        return self.sumList[right]
+
+    def calculateSumList(self, left, right):
+        total = 0
+        if(left != 0):
+            total = self.sumList[left-1]
+        for i,num in enumerate(self.list[left: right+1]) :
+            total = total+num
+            self.sumList[left+i] = total
